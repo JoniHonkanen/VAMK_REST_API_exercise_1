@@ -9,7 +9,14 @@ const db = new sqlite3.Database("./animals.db");
 
 // API-avain suojaus
 app.use((req, res, next) => {
-  const key = req.headers["x-api-key"];
+  const key = req.headers["x-api-key"]
+  console.log("🔑 Saapuva API-avain:", key);
+  console.log("🔐 Odotettu API-avain:", process.env.API_KEY);
+
+  if (!process.env.API_KEY) {
+    console.error("❌ API_KEY puuttuu .env tiedostosta!");
+    return res.status(500).json({ error: "Server misconfigured" });
+  }
 
   if (key !== process.env.API_KEY) {
     return res.status(401).json({ error: "Unauthorized" });
